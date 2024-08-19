@@ -1,0 +1,53 @@
+run:
+  deadline: 5m
+
+linters:
+  enable-all: true
+  disable:
+    - maligned
+    - interfacer
+    - scopelint
+    - gomoddirectives
+    - nolintlint
+    - exhaustivestruct
+    - wrapcheck
+    - varnamelen
+    - golint
+    - paralleltest
+    - exhaustruct
+    - wsl
+    - nlreturn
+    - deadcode
+    - ifshort
+    - structcheck
+    - nosnakecase
+    - varcheck
+    - sqlclosecheck
+    - rowserrcheck
+    - wastedassign
+    - depguard
+    - testpackage
+    - gomnd
+    - mnd
+    - testifylint
+    - revive
+    - tagliatelle
+    - perfsprint
+    - err113
+    - nonamedreturns
+    - ireturn
+    - cyclop
+    - godox
+    - nestif
+    - lll
+    - dupl
+    - intrange
+    - gocognit
+    - godot
+    - stylecheck
+    - gochecknoglobals
+
+linters-settings:
+  funlen:
+    lines: 120
+    statements: 60
