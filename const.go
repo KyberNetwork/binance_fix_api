@@ -23,11 +23,9 @@ const (
 	msgType_LIMIT_RESPONSE enum.MsgType = "XLR"
 )
 
-var (
-	mappedMsgTypeTag = map[enum.MsgType]quickfix.Tag{
-		msgType_LIMIT_RESPONSE: tagGetLimitReqID,
-	}
-)
+var mappedMsgTypeTag = map[enum.MsgType]quickfix.Tag{
+	msgType_LIMIT_RESPONSE: tagGetLimitReqID,
+}
 
 func getReqIDTagFromMsgType(msgType enum.MsgType) (quickfix.Tag, error) {
 	if tag, ok := mappedMsgTypeTag[msgType]; ok {
