@@ -23,32 +23,6 @@ const (
 	msgType_LIMIT_RESPONSE enum.MsgType = "XLR"
 )
 
-/*
-	switch msgType {
-		case enum.MsgType_SECURITY_LIST:
-			return tag.SecurityReqID, nil
-		case enum.MsgType_MARKET_DATA_REQUEST:
-			return tag.MDReqID, nil
-		case enum.MsgType_MARKET_DATA_REQUEST_REJECT:
-			return tag.MDReqID, nil
-		case enum.MsgType_MARKET_DATA_SNAPSHOT_FULL_REFRESH:
-			return tag.MDReqID, nil
-		case enum.MsgType_MARKET_DATA_INCREMENTAL_REFRESH:
-			return tag.MDReqID, nil
-		case enum.MsgType_EXECUTION_REPORT:
-			return tag.OrigClOrdID, nil
-		case enum.MsgType_ORDER_CANCEL_REJECT:
-			return tag.ClOrdID, nil
-		case enum.MsgType_ORDER_MASS_CANCEL_REPORT:
-			return tag.OrderID, nil
-		case enum.MsgType_POSITION_REPORT:
-			return tag.PosReqID, nil
-		case enum.MsgType_USER_RESPONSE:
-			return tag.UserRequestID, nil
-		case enum.MsgType_SECURITY_STATUS:
-			return tag.SecurityStatusReqID, nil
-	}
-*/
 var (
 	mappedMsgTypeTag = map[enum.MsgType]quickfix.Tag{
 		msgType_LIMIT_RESPONSE: tagGetLimitReqID,
