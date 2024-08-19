@@ -47,7 +47,10 @@ func main() {
 		PrivateKeyFilePath: privateKeyFilePath,
 		Settings:           settings,
 	}
-	client, err := fix.NewClient(logger, conf, fix.WithZapLogFactory(logger))
+	client, err := fix.NewClient(
+		context.Background(),
+		logger, conf, fix.WithZapLogFactory(logger),
+	)
 	if err != nil {
 		logger.Panicw("Failed to init client", "err", err)
 	}

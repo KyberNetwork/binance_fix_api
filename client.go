@@ -13,6 +13,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const logonTimeout = 30 * time.Second
+
 type Config struct {
 	APIKey             string
 	PrivateKeyFilePath string
@@ -69,7 +71,7 @@ type Client struct {
 	options Options
 }
 
-func NewClient(l *zap.SugaredLogger, conf Config, opts ...NewClientOption) (*Client, error) {
+func NewClient(ctx context.Context, l *zap.SugaredLogger, conf Config, opts ...NewClientOption) (*Client, error) {
 	// Get BeginString, TargetCompID and SenderCompID from settings.
 	if conf.Settings == nil {
 		return nil, errors.New("empty quickfix settings")
@@ -127,7 +129,7 @@ func NewClient(l *zap.SugaredLogger, conf Config, opts ...NewClientOption) (*Cli
 		return nil, err
 	}
 
-	err = client.Start()
+	err = client.Start(ctx)
 	if err != nil {
 		client.l.Errorw("Failed to start fix connection", "error", err)
 		return nil, err
@@ -136,18 +138,27 @@ func NewClient(l *zap.SugaredLogger, conf Config, opts ...NewClientOption) (*Cli
 	return client, nil
 }
 
-func (c *Client) Start() error {
+func (c *Client) Start(ctx context.Context) error {
 	if err := c.initiator.Start(); err != nil {
 		c.l.Errorw("Failed to initialize initiator", "error", err)
 		return err
 	}
 
 	// Wait for the session to be authorized by the server.
-	for !c.IsConnected() {
-		time.Sleep(10 * time.Millisecond)
-	}
+	timeoutCtx, cancel := context.WithTimeout(ctx, logonTimeout)
+	defer cancel()
 
-	return nil
+	for {
+		select {
+		case <-timeoutCtx.Done():
+			return errors.New("logon timed out")
+		default:
+			if c.IsConnected() {
+				return nil
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
 }
 
 func (c *Client) IsConnected() bool {
