@@ -67,6 +67,8 @@ func (c *Client) FromApp(msg *quickfix.Message, s quickfix.SessionID) quickfix.M
 		return err
 	}
 
+	c.handleSubscriptions(msgType, msg)
+
 	reqIDTag, err2 := getReqIDTagFromMsgType(enum.MsgType(msgType))
 	if err2 != nil {
 		c.l.Warnw("Could not get request ID tag", "msgType", msgType, "error", err2)
