@@ -36,14 +36,22 @@ func (c *Client) OnLogout(quickfix.SessionID) {
 
 // ToAdmin notification of admin message being sent to target.
 func (c *Client) ToAdmin(msg *quickfix.Message, _ quickfix.SessionID) {
-	rawData := GetLogonRawData(c.privateKey, c.senderCompID, c.targetCompID, SendingTimeNow())
+	msgType, err := msg.MsgType()
+	if err != nil {
+		c.l.Errorw("Failed to get msg type", "err", err)
+		return
+	}
 
-	msg.Body.Set(field.NewRawDataLength(len(rawData)))
-	msg.Body.Set(field.NewRawData(rawData))
-	msg.Body.Set(field.NewUsername(c.apiKey))
-	msg.Body.Set(field.NewResetSeqNumFlag(true))
-	msg.Body.SetInt(tagMessageHandling, int(c.options.messageHandling))
-	msg.Body.SetInt(tagResponseMode, int(c.options.responseMode))
+	c.l.Infow("ToAdmin message type", "data", msgType)
+	if enum.MsgType(msgType) == enum.MsgType_LOGON {
+		rawData := GetLogonRawData(c.privateKey, c.senderCompID, c.targetCompID, SendingTimeNow())
+		msg.Body.Set(field.NewRawDataLength(len(rawData)))
+		msg.Body.Set(field.NewRawData(rawData))
+		msg.Body.Set(field.NewUsername(c.apiKey))
+		msg.Body.Set(field.NewResetSeqNumFlag(true))
+		msg.Body.SetInt(tagMessageHandling, int(c.options.messageHandling))
+		msg.Body.SetInt(tagResponseMode, int(c.options.responseMode))
+	}
 }
 
 // ToApp notification of app message being sent to target.
