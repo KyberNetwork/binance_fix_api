@@ -3,6 +3,7 @@ module github.com/KyberNetwork/binance_fix_api
 go 1.22
 
 require (
+	github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9
 	github.com/google/uuid v1.6.0
 	github.com/quickfixgo/enum v0.1.0
 	github.com/quickfixgo/field v0.1.0

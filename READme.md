@@ -47,7 +47,6 @@ func main() {
 		PrivateKeyFilePath: privateKeyFilePath,
 		Settings:           settings,
 	}
-	
 	client, err := fix.NewClient(
 		context.Background(),
 		logger, conf, fix.WithZapLogFactory(logger),
@@ -58,13 +57,22 @@ func main() {
 
 	logger.Info("Everything is ready!")
 
+	// GET LIMIT MESSAGE
 	limit, err := client.NewGetLimitService().Do(context.Background())
 	if err != nil {
 		logger.Panicw("Failed to get LimitMessages", "err", err)
 	}
-
 	logger.Infow("Get limit message", "data", limit)
-	
+
+	// SUBSCRIBE TO EXECUTION REPORT
+	client.SubscribeToExecutionReport(func(o *fix.Order) {
+		logger.Infow("Received data from subscription", "order", o)
+	})
+
+	logger.Info("Subscribed to execution report!")
+
+	// TRY TO PLACE ORDER
+	time.Sleep(time.Second)
 	order, err := client.NewOrderSingleService().
 		Symbol("BNBUSDT").
 		Side(enum.Side_BUY).
@@ -75,6 +83,34 @@ func main() {
 		Do(context.Background())
 
 	logger.Infow("NewOrderSingleService resp", "order", order, "err", err)
+
+	time.Sleep(3 * time.Second)
 }
 
 ```
+
+## Order Entry Messages
+
+1. ✅ `NewOrderSingle<D>`
+   - Sent by the client to submit a new order for execution.
+2. 🚫 `NewOrderList<E>`
+   - Sent by the client to submit a list of orders for execution.
+3. 🚫 `OrderCancelRequest<F>`
+   - Sent by the client to cancel an order or an order list.
+4. 🚫 `OrderCancelRequestAndNewOrderSingle<XCN>`
+   - Sent by the client to cancel an order and submit a new one for execution.
+5. 🚫 `OrderMassCancelRequest<q>`
+   - Sent by the client to cancel all open orders on a symbol.
+6. ✅ `ExecutionReport<8>`
+   - Sent by the server whenever an order state changes.
+7. 🚫 `OrderCancelReject<9>`
+   - Sent by the server when OrderCancelRequest<F> has failed.
+8. 🚫 `OrderMassCancelReport<r>`
+   - Sent by the server in response to OrderMassCancelRequest<q>.
+9. 🚫 `ListStatus<N>`
+   - Sent by the server whenever an order list state changes.
+
+## Limit message
+
+- ✅ Sent by the client to query current limits.
+- ✅ Sent by the server in response to LimitQuery<XLQ>.

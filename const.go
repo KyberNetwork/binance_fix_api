@@ -21,6 +21,8 @@ const (
 	tagCumQuoteQty       quickfix.Tag = 25017
 	tagOrderCreationTime quickfix.Tag = 25018
 	tagWorkingTime       quickfix.Tag = 25023
+
+	ExecutionReportTopic = "ExecutionReport<8>"
 )
 
 const (

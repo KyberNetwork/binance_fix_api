@@ -8,6 +8,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/chuckpreslar/emission"
+	"github.com/quickfixgo/enum"
 	"github.com/quickfixgo/field"
 	"github.com/quickfixgo/quickfix"
 	"go.uber.org/zap"
@@ -61,6 +63,7 @@ type Client struct {
 	isConnected atomic.Bool
 	initiator   *quickfix.Initiator
 	pending     map[string]*call
+	emitter     *emission.Emitter
 
 	apiKey       string
 	privateKey   ed25519.PrivateKey
@@ -109,6 +112,7 @@ func NewClient(ctx context.Context, l *zap.SugaredLogger, conf Config, opts ...N
 	client := &Client{
 		l:            l,
 		pending:      make(map[string]*call),
+		emitter:      emission.NewEmitter(),
 		apiKey:       conf.APIKey,
 		privateKey:   privateKey,
 		beginString:  beginString,
@@ -208,4 +212,15 @@ func (c *Client) send(
 	}
 
 	return waiter{cc}, nil
+}
+
+func (c *Client) handleSubscriptions(msgType string, msg *quickfix.Message) {
+	if enum.MsgType(msgType) == enum.MsgType_EXECUTION_REPORT {
+		order, err := decodeExecutionReport(msg)
+		if err != nil {
+			c.l.Errorw("Failed to decodeExecutionReport", "err", err, "msg", msg)
+			return
+		}
+		c.emitter.Emit(ExecutionReportTopic, &order)
+	}
 }
