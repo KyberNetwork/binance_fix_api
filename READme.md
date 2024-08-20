@@ -47,6 +47,7 @@ func main() {
 		PrivateKeyFilePath: privateKeyFilePath,
 		Settings:           settings,
 	}
+	
 	client, err := fix.NewClient(
 		context.Background(),
 		logger, conf, fix.WithZapLogFactory(logger),
@@ -63,6 +64,17 @@ func main() {
 	}
 
 	logger.Infow("Get limit message", "data", limit)
+	
+	order, err := client.NewOrderSingleService().
+		Symbol("BNBUSDT").
+		Side(enum.Side_BUY).
+		Type(enum.OrdType_LIMIT).
+		TimeInForce(enum.TimeInForce_GOOD_TILL_CANCEL).
+		Quantity(0.01).
+		Price(502).
+		Do(context.Background())
+
+	logger.Infow("NewOrderSingleService resp", "order", order, "err", err)
 }
 
 ```
