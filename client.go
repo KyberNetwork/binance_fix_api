@@ -26,6 +26,7 @@ type Config struct {
 type Options struct {
 	messageHandling MessageHandling
 	responseMode    ResponseMode
+	dropCopyFlag    string
 	fixLogFactory   quickfix.LogFactory
 }
 
@@ -33,6 +34,7 @@ func defaultOpts() Options {
 	return Options{
 		messageHandling: MessageHandlingSequential,
 		responseMode:    ResponseModeEverything,
+		dropCopyFlag:    "N",
 		fixLogFactory:   quickfix.NewNullLogFactory(),
 	}
 }
@@ -48,6 +50,12 @@ func WithMessageHandlingOpt(mh MessageHandling) NewClientOption {
 func WithResponseModeOpt(rm ResponseMode) NewClientOption {
 	return func(o *Options) {
 		o.responseMode = rm
+	}
+}
+
+func WithDropCopyFlagOpt(flag string) NewClientOption {
+	return func(o *Options) {
+		o.dropCopyFlag = flag
 	}
 }
 

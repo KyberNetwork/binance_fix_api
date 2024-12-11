@@ -51,6 +51,7 @@ func (c *Client) ToAdmin(msg *quickfix.Message, _ quickfix.SessionID) {
 		msg.Body.Set(field.NewResetSeqNumFlag(true))
 		msg.Body.SetInt(tagMessageHandling, int(c.options.messageHandling))
 		msg.Body.SetInt(tagResponseMode, int(c.options.responseMode))
+		msg.Body.SetString(tagDropCopyFlag, c.options.dropCopyFlag)
 	}
 }
 

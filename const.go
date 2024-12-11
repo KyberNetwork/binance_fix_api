@@ -10,6 +10,7 @@ const (
 	tagMessageHandling quickfix.Tag = 25035
 	tagResponseMode    quickfix.Tag = 25036
 	tagGetLimitReqID   quickfix.Tag = 6136
+	tagDropCopyFlag    quickfix.Tag = 9406
 
 	tagNoLimitIndicators            quickfix.Tag = 25003
 	tagLimitType                    quickfix.Tag = 25004
